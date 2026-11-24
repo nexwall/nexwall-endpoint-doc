@@ -27,11 +27,15 @@ Every event leaves the agent in the same wrapper (the envelope) with a payload d
 | File activity | 1001 | Implemented |
 | Network activity | 4001 | Implemented |
 | DNS activity | 4003 | Implemented |
-| Registry key and value activity | 201001, 201002 | Planned |
-| Module activity | 1005 | Planned |
-| Memory activity | 1004 | Planned |
-| Detection, vulnerability and compliance findings | 2004, 2002, 2003 | Planned |
+| Registry key and value activity | 201001, 201002 | Implemented |
+| Module activity | 1005 | Implemented |
+| Memory activity | 1004 | Implemented |
+| Authentication | 3002 | Implemented |
+| Detection finding | 2004 | Implemented |
+| Vulnerability and compliance findings | 2002, 2003 | Planned |
 | Device inventory | 5001 | Planned |
+
+Rules that apply to every mapper: an event without a time or without its subject (a path, a user, a finding id) is refused instead of being sent half empty; a value the sensor cannot express becomes "unknown" rather than a guess; and the tenant and device are never set by the mapper, only by the agent and the Controller from the certificate. The registry classes belong to the OCSF Windows extension.
 
 ## Example
 

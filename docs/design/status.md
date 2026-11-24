@@ -13,7 +13,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 |---|---|
 | Enrolment with a single-use token and a tenant-bound certificate | Working on Windows 10 22H2 and Linux |
 | Mutual TLS ingestion that rejects events of another tenant | Working in a development mode |
-| OCSF 1.10.0 event envelope and mappers for process, file, network and DNS activity | Working, covered by tests |
+| OCSF 1.10.0 event envelope and mappers for process, file, network, DNS, registry, module, memory, sign-in and detection-finding events | Working, covered by tests; the sensors that feed the newer classes are not connected yet |
 | Windows sensor | Stock behaviour rules fire in the lab; a 25-minute soak test ran without a crash |
 | Signed policy: verification, anti-rollback, per-module apply with rollback, compliance report | Working on Windows 10 and Linux |
 | Agent-to-sensor local channel (gRPC over a local pipe or socket, restricted to system and administrators) | Working on Windows 10 and Linux |
@@ -31,7 +31,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 ## Planned
 
 - Sensors for Linux and macOS, and more Windows versions
-- Remaining OCSF classes
+- Remaining OCSF classes (vulnerability, compliance, device inventory)
 - Installers that replace the running agent on each operating system
 - Search and analytics stores (OpenSearch, ClickHouse) and the management portal
 - The firewall isolation loop, and measurement of its speed
