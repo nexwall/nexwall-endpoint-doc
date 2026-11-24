@@ -34,6 +34,12 @@ sequenceDiagram
 - The Controller reads the tenant and the device from the certificate. If an event names a different tenant or device, the whole request is rejected.
 - Request size is limited, and requests without a valid certificate are refused.
 - The same rule is repeated at each later stage of the pipeline, and a cross-tenant test suite is part of the release criteria.
+- An event may carry its own tenant or device field only if it matches the certificate exactly. An empty, null or non-text value counts as a mismatch, and so does a key that differs only in letter case, because some software reads such keys as the same field. Those events are refused.
+- The certificate identity must be written in one exact form. Encoded or padded variants of the same name are refused.
+
+### How this is tested
+
+A randomised suite runs six tenants with the same device names in each, through the real API, message bus, stores, policy, updates, revocation and audit log. It mixes honest traffic with events and batches that name other tenants, and checks that nothing crosses a tenant boundary and that every accepted event is stored exactly once. Fuzz tests feed arbitrary request bodies and certificate names to the same code. The suite found two gaps during development (look-alike keys and non-canonical certificate names); both are fixed and kept as regression cases.
 
 ## Tenancy tiers
 

@@ -24,6 +24,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Tamper-evident audit log (hash chain, signed checkpoints); privileged actions are refused if they cannot be recorded | Working in a development mode |
 | Update service: signed manifests, ring-by-ring release, stop switch | Working in a development mode; applied by a lab installer only |
 | Durable event pipeline: acknowledged only after the message bus stored the event, tenant stamped from the certificate, per-tenant indexing, quarantine for mismatches | Working in a development mode; stored in files |
+| Cross-tenant test suite and fuzz tests on the ingestion path | Working; reports and search not built yet |
 | Licence gate in every build | Working |
 
 ## Planned
