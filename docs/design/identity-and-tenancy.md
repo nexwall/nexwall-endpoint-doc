@@ -1,0 +1,47 @@
+---
+title: Identity and tenancy
+slug: /design/identity-and-tenancy
+---
+
+# Identity and tenancy
+
+## How a device proves who it is
+
+A device gets its identity once, at enrolment, and uses it for every later connection.
+
+```mermaid
+sequenceDiagram
+  participant Admin as Administrator
+  participant C as Central
+  participant A as nx-agent
+  Admin->>C: create a single-use token for a tenant
+  Admin->>A: install the agent with the token
+  A->>A: generate a key pair on the device
+  A->>C: certificate request and token, over TLS
+  C->>C: redeem the token, choose tenant and device id
+  C-->>A: client certificate signed by the Central CA
+  A->>C: events over mutual TLS
+```
+
+- The **private key never leaves the device**.
+- The token works **once** and expires. A reused, expired or unknown token is refused.
+- Central takes **only the public key** from the certificate request. The tenant and the device identifier are written by Central into the certificate, so nothing in the request can choose them.
+- Certificates are short lived and renewed automatically (renewal is planned).
+
+## Tenant isolation
+
+- Every connection uses TLS 1.3 with a client certificate.
+- Central reads the tenant and the device from the certificate. If an event names a different tenant or device, the whole request is rejected.
+- Request size is limited, and requests without a valid certificate are refused.
+- The same rule is repeated at each later stage of the pipeline, and a cross-tenant test suite is part of the release criteria.
+
+## Tenancy tiers
+
+| Tier | Isolation |
+|---|---|
+| Pooled | Shared services with separate indexes per tenant, document-level security and per-tenant keys |
+| Dedicated | A separate namespace or cluster per tenant, provisioned by Central |
+
+## People
+
+People sign in with OpenID Connect through an identity service, with one organisation per tenant. Partners who manage several customers use the Nexwall partner portal, which hands the user over to Endpoint with a short-lived signed token.
