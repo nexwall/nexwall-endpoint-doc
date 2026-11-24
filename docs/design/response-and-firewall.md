@@ -9,7 +9,7 @@ The most distinctive part of the design is the loop between the endpoint and the
 
 ```mermaid
 flowchart LR
-  EV["Detection on the endpoint or in Central"] --> REC["Recommendation"]
+  EV["Detection on the endpoint or in the Controller"] --> REC["Recommendation"]
   REC --> APP{"Approval required by policy?"}
   APP -- "yes" --> HUMAN["Analyst or administrator approves"]
   APP -- "no" --> WF["Response workflow"]
@@ -32,9 +32,9 @@ flowchart LR
 
 ## Properties
 
-- Actions are **requested by Central, authorised by policy and idempotent**: running one twice has the same effect as once.
+- Actions are **requested by the Controller, authorised by policy and idempotent**: running one twice has the same effect as once.
 - The agent **confirms the resulting state**, and the audit record is written both on the device and centrally.
-- Isolation keeps the channel to Central open so the device can be released.
+- Isolation keeps the channel to the Controller open so the device can be released.
 - The design target is to isolate a device at the edge in **under 30 seconds**. It is a target that will be measured over repeated runs before it is claimed.
 
 ## Posture-based access

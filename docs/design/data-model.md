@@ -12,7 +12,7 @@ Every event leaves the agent in the same wrapper (the envelope) with a payload d
 | Field | Meaning |
 |---|---|
 | `schema_version` | Version of the envelope itself |
-| `tenant_id`, `device_id` | Set by the agent from its certificate. Sensors cannot set them, and Central rejects events that disagree with the certificate |
+| `tenant_id`, `device_id` | Set by the agent from its certificate. Sensors cannot set them, and the Controller rejects events that disagree with the certificate |
 | `sensor` | Which sensor produced the event |
 | `ocsf_class_uid`, `ocsf_version` | The OCSF class of the payload and the pinned version |
 | `time_unix_nano` | Event time |

@@ -21,11 +21,11 @@ Nexwall Endpoint is composed of open-source building blocks and Nexwall's own co
 
 Why these: each is mature, widely used and replaceable behind the same local interface, so no single project is a point of failure.
 
-## In the central service
+## In the Controller service
 
 | Part | Role | Licence |
 |---|---|---|
-| Nexwall Endpoint Central (Go) | API, tenancy, policy, enrolment and certificate authority, response workflows, audit | Proprietary |
+| Nexwall Endpoint Controller (Go) | API, tenancy, policy, enrolment and certificate authority, response workflows, audit | Proprietary |
 | PostgreSQL | Configuration and state | PostgreSQL licence |
 | NATS | Event bus between ingestion and the stores | Apache-2.0 |
 | OpenSearch | Search and detection storage | Apache-2.0 |
@@ -45,4 +45,4 @@ The server-side set is the target design. The first releases start with a lighte
 
 ## What Nexwall builds itself
 
-The agent, the central service, the event envelope and OCSF mappers, the policy and update system, the response logic and the detection packs. See [Data model](data-model.md) and [Identity and tenancy](identity-and-tenancy.md).
+The agent, the Controller service, the event envelope and OCSF mappers, the policy and update system, the response logic and the detection packs. See [Data model](data-model.md) and [Identity and tenancy](identity-and-tenancy.md).

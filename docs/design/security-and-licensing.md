@@ -11,7 +11,7 @@ slug: /design/security-and-licensing
 - **Staged rollout with rollback**: updates go through rings and can be stopped centrally.
 - **Mutual TLS with short-lived certificates** from a Nexwall certificate authority.
 - **Tamper resistance in user mode**: restricted service permissions, guards on the agent's files and settings, a watchdog and signed binaries. Nexwall Endpoint does not ship a kernel driver.
-- **Least privilege between parts**: sensors have no network access of their own and the agent is the only component that talks to Central.
+- **Least privilege between parts**: sensors have no network access of their own and the agent is the only component that talks to the Controller.
 - **Bounded resources**: the on-device spool has a fixed size and a documented drop policy.
 
 ## What Nexwall Endpoint does not claim

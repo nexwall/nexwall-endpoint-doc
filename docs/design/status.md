@@ -15,13 +15,18 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Mutual TLS ingestion that rejects events of another tenant | Working in a development mode |
 | OCSF 1.10.0 event envelope and mappers for process, file, network and DNS activity | Working, covered by tests |
 | Windows sensor | Stock behaviour rules fire in the lab; a 25-minute soak test ran without a crash |
+| Signed policy: verification, anti-rollback, per-module apply with rollback, compliance report | Working on Windows 10 and Linux |
+| Agent-to-sensor local channel (gRPC over a local pipe or socket, restricted to system and administrators) | Working on Windows 10 and Linux |
+| Durable event queue on disk, bounded, at-least-once delivery | Working; delivery after an outage verified end to end |
+| Batch ingestion that refuses a whole batch if any event names another tenant | Working in a development mode |
+| Staged updates: signed manifests, rings, stop switch, health-checked install with rollback | Agent logic done and tested; no update service or installer yet |
 | Licence gate in every build | Working |
 
 ## Planned
 
 - Sensors for Linux and macOS, and more Windows versions
-- Remaining OCSF classes and the agent-to-sensor local channel
-- Signed policy, staged updates and certificate renewal
+- Remaining OCSF classes
+- Update service, installers and certificate renewal
 - Persistent central storage, the data pipeline and the management portal
 - The firewall isolation loop, and measurement of its speed
 - Detection content packs and managed detection services

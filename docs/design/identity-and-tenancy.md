@@ -12,26 +12,26 @@ A device gets its identity once, at enrolment, and uses it for every later conne
 ```mermaid
 sequenceDiagram
   participant Admin as Administrator
-  participant C as Central
+  participant C as Controller
   participant A as nx-agent
   Admin->>C: create a single-use token for a tenant
   Admin->>A: install the agent with the token
   A->>A: generate a key pair on the device
   A->>C: certificate request and token, over TLS
   C->>C: redeem the token, choose tenant and device id
-  C-->>A: client certificate signed by the Central CA
+  C-->>A: client certificate signed by the Controller CA
   A->>C: events over mutual TLS
 ```
 
 - The **private key never leaves the device**.
 - The token works **once** and expires. A reused, expired or unknown token is refused.
-- Central takes **only the public key** from the certificate request. The tenant and the device identifier are written by Central into the certificate, so nothing in the request can choose them.
+- The Controller takes **only the public key** from the certificate request. The tenant and the device identifier are written by the Controller into the certificate, so nothing in the request can choose them.
 - Certificates are short lived and renewed automatically (renewal is planned).
 
 ## Tenant isolation
 
 - Every connection uses TLS 1.3 with a client certificate.
-- Central reads the tenant and the device from the certificate. If an event names a different tenant or device, the whole request is rejected.
+- The Controller reads the tenant and the device from the certificate. If an event names a different tenant or device, the whole request is rejected.
 - Request size is limited, and requests without a valid certificate are refused.
 - The same rule is repeated at each later stage of the pipeline, and a cross-tenant test suite is part of the release criteria.
 
@@ -40,7 +40,7 @@ sequenceDiagram
 | Tier | Isolation |
 |---|---|
 | Pooled | Shared services with separate indexes per tenant, document-level security and per-tenant keys |
-| Dedicated | A separate namespace or cluster per tenant, provisioned by Central |
+| Dedicated | A separate namespace or cluster per tenant, provisioned by the Controller |
 
 ## People
 
