@@ -23,6 +23,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Short-lived certificates with renewal and key rotation; revocation of a device or a tenant | Working in a development mode |
 | Tamper-evident audit log (hash chain, signed checkpoints); privileged actions are refused if they cannot be recorded | Working in a development mode |
 | Update service: signed manifests, ring-by-ring release, stop switch | Working in a development mode; applied by a lab installer only |
+| Durable event pipeline: acknowledged only after the message bus stored the event, tenant stamped from the certificate, per-tenant indexing, quarantine for mismatches | Working in a development mode; stored in files |
 | Licence gate in every build | Working |
 
 ## Planned
@@ -30,7 +31,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 - Sensors for Linux and macOS, and more Windows versions
 - Remaining OCSF classes
 - Installers that replace the running agent on each operating system
-- Persistent central storage, the data pipeline and the management portal
+- Search and analytics stores (OpenSearch, ClickHouse) and the management portal
 - The firewall isolation loop, and measurement of its speed
 - Detection content packs and managed detection services
 

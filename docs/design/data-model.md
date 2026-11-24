@@ -60,3 +60,9 @@ A process launch, as the payload of an envelope (values are illustrative):
 ## Why OCSF
 
 A single schema lets detections, searches, dashboards and reports work the same way for every operating system and every sensor, and lets a sensor be replaced without rewriting content.
+
+## Event path
+
+An agent sends events in batches over mutual TLS. The Controller reads the tenant and the device from the certificate, writes them into every event, and publishes each event to a message bus under a subject that contains both. It answers "accepted" only after the bus has stored the event. Retries by the agent are recognised and do not create duplicates.
+
+An indexer reads the bus and stores events in a separate area for each tenant. Before storing, it checks that the tenant and device inside the event match the subject. An event that does not match is moved to a quarantine that only operators can read.
