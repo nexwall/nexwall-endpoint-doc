@@ -45,3 +45,9 @@ sequenceDiagram
 ## People
 
 People sign in with OpenID Connect through an identity service, with one organisation per tenant. Partners who manage several customers use the Nexwall partner portal, which hands the user over to Endpoint with a short-lived signed token.
+
+## Renewal and revocation
+
+Certificates are short-lived. The agent asks for a new one after two thirds of the lifetime has passed and generates a new key for it; the Controller issues it for the same tenant and device only, and not before half of the lifetime has passed. The new certificate is checked against the Controller CA before it replaces the old one.
+
+An administrator can revoke one device or a whole tenant. The Controller checks the revocation list on every request, so a revoked device is refused at once, including when it tries to renew, even while its certificate is still inside its validity period.

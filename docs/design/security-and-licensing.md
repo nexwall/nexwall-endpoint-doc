@@ -29,3 +29,7 @@ Nexwall Endpoint is a detection and response product. It relies on the operating
 ## Privacy and data location
 
 Event data belongs to the tenant that produced it. The agent connects to a region-specific endpoint so a customer can keep its data in a chosen region, in line with Brazilian data protection law (LGPD).
+
+## Audit log
+
+Enrolments, certificate renewals, revocations and update releases are recorded in an append-only log. Each record contains the hash of the previous record, so changing, deleting, inserting or reordering records is detected. Signed checkpoints, made with a key kept outside the log store, also reveal a log that was cut short. A privileged action is refused when its record cannot be written.

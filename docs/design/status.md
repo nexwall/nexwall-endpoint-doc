@@ -20,13 +20,16 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Durable event queue on disk, bounded, at-least-once delivery | Working; delivery after an outage verified end to end |
 | Batch ingestion that refuses a whole batch if any event names another tenant | Working in a development mode |
 | Staged updates: signed manifests, rings, stop switch, health-checked install with rollback | Agent logic done and tested; no update service or installer yet |
+| Short-lived certificates with renewal and key rotation; revocation of a device or a tenant | Working in a development mode |
+| Tamper-evident audit log (hash chain, signed checkpoints); privileged actions are refused if they cannot be recorded | Working in a development mode |
+| Update service: signed manifests, ring-by-ring release, stop switch | Working in a development mode; applied by a lab installer only |
 | Licence gate in every build | Working |
 
 ## Planned
 
 - Sensors for Linux and macOS, and more Windows versions
 - Remaining OCSF classes
-- Update service, installers and certificate renewal
+- Installers that replace the running agent on each operating system
 - Persistent central storage, the data pipeline and the management portal
 - The firewall isolation loop, and measurement of its speed
 - Detection content packs and managed detection services
