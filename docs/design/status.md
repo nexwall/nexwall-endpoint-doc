@@ -17,6 +17,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Windows sensor | Stock behaviour rules fire in the lab; a 25-minute soak test ran without a crash |
 | Signed policy: verification, anti-rollback, per-module apply with rollback, compliance report | Working on Windows 10 and Linux |
 | Agent-to-sensor local channel (gRPC over a local pipe or socket, restricted to system and administrators) | Working on Windows 10 and Linux |
+| Agent supervises sensor programs, forwards their events and pushes each sensor its part of the policy | Working with a test sensor; production sensors not connected yet |
 | Durable event queue on disk, bounded, at-least-once delivery | Working; delivery after an outage verified end to end |
 | Batch ingestion that refuses a whole batch if any event names another tenant | Working in a development mode |
 | Staged updates: signed manifests, rings, stop switch, health-checked install with rollback | Agent logic done and tested; no update service or installer yet |

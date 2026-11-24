@@ -56,6 +56,7 @@ flowchart TB
 - A sensor never opens its own connection to the internet.
 - A sensor crash never stops the agent. The agent restarts it with exponential backoff and reports its health.
 - Sensors, rules and the agent update independently.
+- Each sensor has its own part of the signed policy. The agent pushes it when the sensor connects and whenever the policy changes. A sensor that is offline receives it on connect. A sensor that refuses it makes the whole policy roll back to the last good one.
 
 ```mermaid
 flowchart LR
