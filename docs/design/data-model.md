@@ -32,10 +32,13 @@ Every event leaves the agent in the same wrapper (the envelope) with a payload d
 | Memory activity | 1004 | Implemented |
 | Authentication | 3002 | Implemented |
 | Detection finding | 2004 | Implemented |
-| Vulnerability and compliance findings | 2002, 2003 | Planned |
-| Device inventory | 5001 | Planned |
+| Vulnerability finding | 2002 | Mapper implemented; the scanner that feeds it is a later module |
+| Compliance finding | 2003 | Implemented; produced by the agent from policy drift |
+| Device inventory | 5001 | Implemented; produced by the agent when the tenant policy enables it |
 
 Rules that apply to every mapper: an event without a time or without its subject (a path, a user, a finding id) is refused instead of being sent half empty; a value the sensor cannot express becomes "unknown" rather than a guess; and the tenant and device are never set by the mapper, only by the agent and the Controller from the certificate. The registry classes belong to the OCSF Windows extension.
+
+The posture classes are stricter still: a malformed identifier, score, address or over-long text refuses the whole event with an error that names the field, and a fact the scanner does not know (for example whether a fix exists) is left out instead of being sent as "false". Device inventory contains host names, addresses and hardware identifiers, so the agent collects and sends it only after the tenant policy turns it on; compliance findings follow one issue from creation to closure and are sent only when something changes.
 
 ## Example
 
