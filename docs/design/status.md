@@ -43,6 +43,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Linux agent packages (DEB and RPM, amd64 and arm64): silent install with a one-time enrolment token, hardened service, reproducible build | Working in the lab (real enrolment through the installed launcher); not yet signed, not yet tried on the full distribution matrix; Windows and macOS installers not built |
 | Linux agent self-update: signed release checked, installed, restarted, confirmed by contact with the Controller; automatic rollback, failed release never retried | Working in the lab (real launcher and binaries, three scenarios); not yet tried under real systemd on the distribution matrix; Windows and macOS not built |
 | Agent release streams in the administration API (read only; publishing stays with operators) | Working in the lab; no portal screen yet |
+| Load test tool with simulated endpoints (`nx-loadgen`), exact loss measurement | Lab run: 10,000 endpoints enrolled, about 400,000 events, none lost or duplicated, on one development Controller; production stores, several Controllers, the 30-day soak and 50,000 endpoints are not yet tested |
 | Licence gate in every build | Working |
 
 ## Planned
