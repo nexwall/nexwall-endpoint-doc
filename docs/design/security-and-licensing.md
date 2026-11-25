@@ -42,4 +42,6 @@ A privileged action is refused when its record cannot be written. For actions wh
 
 Four keys sign what agents and auditors rely on: the certificate authority for agents, the policy key, the update key and the audit key. They are created once, offline, in a new directory; the tool refuses to overwrite an existing set. A production Controller reads them from files that only its owner can read and refuses to start otherwise. It also refuses to start without a database, so it never keeps policy, devices or revocations only in memory, and it never creates keys on its own. Each key has an identifier derived from its public half, so a key change is visible to agents.
 
+The update key is not on the Controller hosts at all. Releases are published, widened ring by ring, halted and resumed by an operator who holds the key and the database owner credentials; the Controller's own database role can only read releases, so a compromised Controller cannot push an update or lift the stop switch. Every such action is written to the audit log before it takes effect.
+
 Keeping keys in files is a first step. Before release they move to a hardware or cloud key service, so that nobody who can read the Controller host can sign certificates or policy.
