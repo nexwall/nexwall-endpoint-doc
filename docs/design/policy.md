@@ -48,4 +48,4 @@ Each tenant has one revision counter. Any change to a level, a device's attribut
 
 Administrators manage policy through the tenant administration API: list, create, replace and delete levels, set a device's groups, OUs and tags, set rollout limits, preview what a device will receive, and read the tenant's audit trail. There are two roles, viewer (read only) and admin. The tenant always comes from the administrator's credentials, never from the request, so other tenants' data is invisible. Every change is written to the audit trail before it is applied; if the trail cannot be written, the change is refused.
 
-Today the API uses access tokens and keeps policy in memory (preview). Sign-in through the identity service, a management screen, durable storage and directory sync of groups and OUs come later.
+Policy, levels and device attributes are stored in PostgreSQL, so they survive restarts. Today the API uses access tokens (preview). Sign-in through the identity service, a management screen and directory sync of groups and OUs come later.

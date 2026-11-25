@@ -37,6 +37,10 @@ sequenceDiagram
 - An event may carry its own tenant or device field only if it matches the certificate exactly. An empty, null or non-text value counts as a mismatch, and so does a key that differs only in letter case, because some software reads such keys as the same field. Those events are refused.
 - The certificate identity must be written in one exact form. Encoded or padded variants of the same name are refused.
 
+### The database keeps tenants apart too
+
+Tenant data is stored in PostgreSQL with row-level security that is enabled and forced on every table. A row is visible and writable only when it belongs to the tenant named by the current transaction, and that setting ends with the transaction, so a pooled connection never carries one tenant's identity into another request. The application connects with a role that owns nothing and cannot switch row security off, drop its rules, or create tables; migrations use a different role. Even a query written without any filter returns only the current tenant's rows. If the database is down, devices keep their last good policy and the Controller reports "unavailable" instead of "no policy".
+
 ### How this is tested
 
 A randomised suite runs six tenants with the same device names in each, through the real API, message bus, stores, policy, updates, revocation and audit log. It mixes honest traffic with events and batches that name other tenants, and checks that nothing crosses a tenant boundary and that every accepted event is stored exactly once. Fuzz tests feed arbitrary request bodies and certificate names to the same code. The suite found two gaps during development (look-alike keys and non-canonical certificate names); both are fixed and kept as regression cases.
