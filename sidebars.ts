@@ -9,6 +9,7 @@ const sidebars: SidebarsConfig = {
     'design/identity-and-tenancy',
     'design/policy',
     'design/response-and-firewall',
+    'design/api',
     'design/security-and-licensing',
     'design/status'
   ]
