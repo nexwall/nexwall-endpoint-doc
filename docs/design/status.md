@@ -33,6 +33,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Cross-tenant test suite and fuzz tests on the ingestion path | Working; reports and search not built yet |
 | Sign-in to the administration API with identity-provider (OIDC) access tokens, strictly verified | Working; tested against a local test issuer, not yet against a live Logto |
 | Vulnerability findings from installed Linux software (dpkg, RPM, apk) matched against a signed advisory feed; one finding per advisory, opened, updated and closed as packages change | Working on Linux; no advisory content ships yet, the feed is delivered through the update channel in stages (own signing key, checked before and after install); Windows and macOS software inventories are not built |
+| Active Directory sync: the nx-dirsync program reads computers, security groups (nested ones included) and OUs over LDAP and pushes a guarded snapshot, so group and OU scopes in policy follow the directory; devices are matched by enrolment-token label or a mapping file | Working against a simulated directory; not yet tested on a real domain controller; Microsoft Entra ID is not built |
 | Directory sync of groups and OUs into policy (snapshot API, one revision, manual and directory values kept apart) | Working; the Active Directory and Entra ID connectors are not built yet |
 | Licence gate in every build | Working |
 
