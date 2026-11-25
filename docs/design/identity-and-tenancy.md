@@ -24,9 +24,10 @@ sequenceDiagram
 ```
 
 - The **private key never leaves the device**.
-- The token works **once** and expires. A reused, expired or unknown token is refused.
+- The token works **once** and expires. A reused, expired, deleted or unknown token is refused, and all of those get the same answer so a token cannot be probed. Tenant administrators create tokens through the administration API; the secret is shown once, only a hash is stored, and the audit log names the token by an identifier, never by its value. A token belongs to the tenant that created it: the same secret under another tenant's name is refused.
 - The Controller takes **only the public key** from the certificate request. The tenant and the device identifier are written by the Controller into the certificate, so nothing in the request can choose them.
-- Certificates are short lived and renewed automatically (renewal is planned).
+- Certificates are short lived and renewed automatically.
+- The Controller records every device it enrols (enrolment time, certificate expiry, last time seen) in the tenant's own rows of the database. If that record cannot be written, no certificate is issued.
 
 ## Tenant isolation
 
@@ -60,4 +61,6 @@ People sign in with OpenID Connect through an identity service, with one organis
 
 Certificates are short-lived. The agent asks for a new one after two thirds of the lifetime has passed and generates a new key for it; the Controller issues it for the same tenant and device only, and not before half of the lifetime has passed. The new certificate is checked against the Controller CA before it replaces the old one.
 
-An administrator can revoke one device or a whole tenant. The Controller checks the revocation list on every request, so a revoked device is refused at once, including when it tries to renew, even while its certificate is still inside its validity period.
+An administrator can revoke one device, and the operator can revoke a whole tenant. The Controller checks revocation on every request, so a revoked device is refused at once, including when it tries to renew, even while its certificate is still inside its validity period. The same device number in another tenant is not affected.
+
+With several Controllers sharing one database, a revocation made through one is seen by the others within five seconds (the requirement is sixty). If the database cannot be reached, the Controller keeps using an answer that is less than a minute old; otherwise it answers "unavailable" and the agent keeps its queued events and tries again. A request is never accepted just because the revocation list could not be read.
