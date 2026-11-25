@@ -17,7 +17,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Windows sensor | Stock behaviour rules fire in the lab; a 25-minute soak test ran without a crash |
 | Signed policy: verification, anti-rollback, per-module apply with rollback, compliance report | Working on Windows 10 and Linux |
 | Policy by tenant, group, OU, tag and device with locks, signed per device, tenant administration API | Working in a development mode; access tokens only |
-| Policy, device attributes, device records, enrolment tokens and revocations in PostgreSQL with forced row-level security | Working; the audit log is still in files |
+| Policy, device attributes, device records, enrolment tokens, revocations and the audit log in PostgreSQL with forced row-level security | Working in the lab |
 | Controller production start: offline key ceremony, key files readable only by their owner, database required, no generated keys | Working in the lab; keys move to a hardware or cloud key service before release |
 | Tenant administrators create enrolment tokens, list devices and revoke a device | Working in a development mode; access tokens only |
 | Agent-to-sensor local channel (gRPC over a local pipe or socket, restricted to system and administrators) | Working on Windows 10 and Linux |
@@ -26,7 +26,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Batch ingestion that refuses a whole batch if any event names another tenant | Working in a development mode |
 | Staged updates: signed manifests, rings, stop switch, health-checked install with rollback | Agent logic done and tested; no update service or installer yet |
 | Short-lived certificates with renewal and key rotation; revocation of a device or a tenant | Working in a development mode |
-| Tamper-evident audit log (hash chain, signed checkpoints); privileged actions are refused if they cannot be recorded | Working in a development mode |
+| Tamper-evident audit log (hash chain per tenant, signed checkpoints, append-only in the database); privileged actions are refused if they cannot be recorded | Working in the lab; tenants cannot verify their own trail yet |
 | Update service: signed manifests, ring-by-ring release, stop switch | Working in a development mode; applied by a lab installer only |
 | Durable event pipeline: acknowledged only after the message bus stored the event, tenant stamped from the certificate, per-tenant indexing, quarantine for mismatches | Working in a development mode; stored in files |
 | Cross-tenant test suite and fuzz tests on the ingestion path | Working; reports and search not built yet |

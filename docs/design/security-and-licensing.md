@@ -32,7 +32,11 @@ Event data belongs to the tenant that produced it. The agent connects to a regio
 
 ## Audit log
 
-Enrolments, certificate renewals, revocations and update releases are recorded in an append-only log. Each record contains the hash of the previous record, so changing, deleting, inserting or reordering records is detected. Signed checkpoints, made with a key kept outside the log store, also reveal a log that was cut short. A privileged action is refused when its record cannot be written.
+Enrolments, certificate renewals, revocations, policy and administration changes and update releases are recorded in an append-only log. In production it is kept in the database, one chain of records per tenant, so several Controllers share it and a tenant never sees anything of another tenant's chain, not even a hash. Each record contains the hash of the previous record of its chain, so changing, deleting, inserting or reordering records is detected.
+
+The database itself refuses to change or delete records. Because someone with full database rights could remove that protection, there are independent checks: the head of each chain is kept beside it and must match the last record, and signed checkpoints, made with a key kept outside the database, reveal a log that was edited, cut short or emptied. Checkpoints are written every hundred records, every minute for chains that grew, and when the Controller stops. An operator verifies a tenant's chain with one command.
+
+A privileged action is refused when its record cannot be written. For actions where the person is shown a secret once, such as creating an enrolment token, the record names the token by an identifier and never contains the secret.
 
 ## Keys and how the Controller starts
 
