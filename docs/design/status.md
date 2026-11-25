@@ -39,6 +39,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Event storage in OpenSearch and ClickHouse (one index or key range per tenant, fixed mappings an agent cannot grow, repeatable writes, ordered paging) | Working; tested against real servers in the lab; the tenant read API, retention rules and message-bus per-tenant access are not built yet |
 | Event search through the administration API (own organisation only, filter by device and time, paged, fails closed) | Working; free-text search and the web screens are not built yet |
 | Event retention per organisation (daily clean-up with a report-first mode, a minimum period, keep-forever, and complete erasure on request) | Working against real OpenSearch and ClickHouse in the lab; periods are set in an operator file, not yet in the portal |
+| Secure message-bus connections (TLS, credentials, least-privilege accounts for the Controller and the indexer) | Working against a real NATS server with TLS and mutual TLS in the lab |
 | Licence gate in every build | Working |
 
 ## Planned
