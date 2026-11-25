@@ -32,7 +32,7 @@ Every event leaves the agent in the same wrapper (the envelope) with a payload d
 | Memory activity | 1004 | Implemented |
 | Authentication | 3002 | Implemented |
 | Detection finding | 2004 | Implemented |
-| Vulnerability finding | 2002 | Mapper implemented; the scanner that feeds it is a later module |
+| Vulnerability finding | 2002 | Implemented; produced by the agent on Linux from installed packages and a signed advisory feed when the tenant policy enables it |
 | Compliance finding | 2003 | Implemented; produced by the agent from policy drift |
 | Device inventory | 5001 | Implemented; produced by the agent when the tenant policy enables it |
 
