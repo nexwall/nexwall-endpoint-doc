@@ -1,0 +1,434 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "Nexwall Endpoint agent API",
+  "version": "1.0.0-preview",
+  "description": "Served by the Controller to agents over TLS 1.3. The tenant and the device are read ONLY from the client certificate (URI SAN nexwall://tenant/<tenant>/device/<device>); a body or query that names a different identity is refused with 403. Preview: the contract may change before release."
+ },
+ "servers": [
+  {
+   "url": "https://controller.example",
+   "description": "Replace with your Controller's agent address"
+  }
+ ],
+ "tags": [
+  {
+   "name": "agent"
+  }
+ ],
+ "paths": {
+  "/healthz": {
+   "get": {
+    "summary": "Liveness",
+    "description": "",
+    "tags": [
+     "agent"
+    ],
+    "responses": {
+     "200": {
+      "description": "ok",
+      "content": {
+       "text/plain": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     }
+    },
+    "security": []
+   }
+  },
+  "/v1/enrol": {
+   "post": {
+    "summary": "Exchange a single-use token and a CSR for a client certificate",
+    "description": "Only the public key of the CSR is used. The tenant comes from the token and the device identifier is chosen by the Controller. Unknown, malformed, used, expired and deleted tokens all answer 401.",
+    "tags": [
+     "agent"
+    ],
+    "responses": {
+     "200": {
+      "description": "Certificate issued and device recorded.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EnrolResponse"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid request or CSR (ECDSA P-256 or stronger required)."
+     },
+     "401": {
+      "description": "Invalid token."
+     },
+     "503": {
+      "description": "Pipeline, store or audit log unavailable. Retry later."
+     }
+    },
+    "security": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/EnrolRequest"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/renew": {
+   "post": {
+    "summary": "Renew the certificate (new key)",
+    "description": "Same tenant and device only, and not before half of the certificate's lifetime has passed (409 before that).",
+    "tags": [
+     "agent"
+    ],
+    "responses": {
+     "200": {
+      "description": "New certificate.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RenewResponse"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid CSR."
+     },
+     "401": {
+      "description": "Certificate missing, invalid, expired or REVOKED. The agent keeps its queued events."
+     },
+     "409": {
+      "description": "Too early to renew."
+     },
+     "503": {
+      "description": "Pipeline, store or audit log unavailable. Retry later."
+     }
+    },
+    "security": [
+     {
+      "mtls": []
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "required": [
+         "csr_pem"
+        ],
+        "additionalProperties": false,
+        "properties": {
+         "csr_pem": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/events": {
+   "post": {
+    "summary": "Send one event",
+    "description": "Accepted (202) only after the message bus has stored it. The Controller stamps tenant and device into the event.",
+    "tags": [
+     "agent"
+    ],
+    "responses": {
+     "202": {
+      "description": "Stored."
+     },
+     "400": {
+      "description": "Not a JSON object, or too large."
+     },
+     "401": {
+      "description": "Certificate missing, invalid, expired or REVOKED. The agent keeps its queued events."
+     },
+     "403": {
+      "description": "The body names another tenant or device than the certificate, or has look-alike identity keys. Nothing is stored. The agent drops the request."
+     },
+     "503": {
+      "description": "Pipeline, store or audit log unavailable. Retry later."
+     }
+    },
+    "security": [
+     {
+      "mtls": []
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/events/batch": {
+   "post": {
+    "summary": "Send a batch of events",
+    "description": "All or nothing: if any event names another identity the whole batch is refused with 403 and nothing is stored. Retried events are recognised and not duplicated.",
+    "tags": [
+     "agent"
+    ],
+    "responses": {
+     "202": {
+      "description": "All events stored."
+     },
+     "400": {
+      "description": "Malformed batch."
+     },
+     "401": {
+      "description": "Certificate missing, invalid, expired or REVOKED. The agent keeps its queued events."
+     },
+     "403": {
+      "description": "The body names another tenant or device than the certificate, or has look-alike identity keys. Nothing is stored. The agent drops the request."
+     },
+     "503": {
+      "description": "Pipeline, store or audit log unavailable. Retry later."
+     }
+    },
+    "security": [
+     {
+      "mtls": []
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "required": [
+         "events"
+        ],
+        "properties": {
+         "events": {
+          "type": "array",
+          "items": {
+           "type": "object"
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/policy": {
+   "get": {
+    "summary": "Fetch the signed policy document for this device",
+    "description": "The revision is the ETag; an agent that already has it gets 304 without a body. 404 when the tenant has no policy yet, 503 when the store is unavailable (the agent keeps its last good policy).",
+    "tags": [
+     "agent"
+    ],
+    "responses": {
+     "200": {
+      "description": "Signed document for this tenant and device."
+     },
+     "304": {
+      "description": "Unchanged."
+     },
+     "401": {
+      "description": "Certificate missing, invalid, expired or REVOKED. The agent keeps its queued events."
+     },
+     "404": {
+      "description": "No policy for the tenant."
+     },
+     "503": {
+      "description": "Pipeline, store or audit log unavailable. Retry later."
+     }
+    },
+    "security": [
+     {
+      "mtls": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "If-None-Match",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/update/manifest": {
+   "get": {
+    "summary": "Fetch the signed update manifest of a release stream",
+    "description": "The sequence is the ETag.",
+    "tags": [
+     "agent"
+    ],
+    "responses": {
+     "200": {
+      "description": "Signed manifest."
+     },
+     "304": {
+      "description": "Unchanged."
+     },
+     "400": {
+      "description": "Bad query."
+     },
+     "401": {
+      "description": "Certificate missing, invalid, expired or REVOKED. The agent keeps its queued events."
+     },
+     "404": {
+      "description": "Updates disabled or no release."
+     }
+    },
+    "security": [
+     {
+      "mtls": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "component",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "os",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "arch",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ]
+   }
+  },
+  "/v1/update/artifact/{sum}": {
+   "get": {
+    "summary": "Download an update artifact by its SHA-256",
+    "description": "",
+    "tags": [
+     "agent"
+    ],
+    "responses": {
+     "200": {
+      "description": "The artifact bytes.",
+      "content": {
+       "application/octet-stream": {
+        "schema": {
+         "type": "string",
+         "format": "binary"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "Certificate missing, invalid, expired or REVOKED. The agent keeps its queued events."
+     },
+     "404": {
+      "description": "Unknown artifact."
+     }
+    },
+    "security": [
+     {
+      "mtls": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "sum",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ]
+   }
+  }
+ },
+ "components": {
+  "securitySchemes": {
+   "mtls": {
+    "type": "mutualTLS",
+    "description": "Client certificate issued by the Controller's agent CA."
+   }
+  },
+  "schemas": {
+   "EnrolRequest": {
+    "type": "object",
+    "required": [
+     "token",
+     "csr_pem"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "token": {
+      "type": "string"
+     },
+     "csr_pem": {
+      "type": "string"
+     }
+    }
+   },
+   "EnrolResponse": {
+    "type": "object",
+    "properties": {
+     "tenant_id": {
+      "type": "string"
+     },
+     "device_id": {
+      "type": "string"
+     },
+     "cert_pem": {
+      "type": "string"
+     },
+     "ca_pem": {
+      "type": "string"
+     },
+     "not_after": {
+      "type": "string",
+      "format": "date-time"
+     }
+    }
+   },
+   "RenewResponse": {
+    "type": "object",
+    "properties": {
+     "cert_pem": {
+      "type": "string"
+     },
+     "not_after": {
+      "type": "string",
+      "format": "date-time"
+     }
+    }
+   }
+  }
+ }
+}
