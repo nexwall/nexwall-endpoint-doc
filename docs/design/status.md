@@ -36,6 +36,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Active Directory sync: the nx-dirsync program reads computers, security groups (nested ones included) and OUs over LDAP and pushes a guarded snapshot, so group and OU scopes in policy follow the directory; devices are matched by enrolment-token label or a mapping file | Working against a simulated directory; not yet tested on a real domain controller; Microsoft Entra ID (devices and security groups through Graph, read-only application) works the same way, tested against a simulated Graph only |
 | Separate signing service for the policy, update and audit keys (mutual TLS, per-client key access, pinned public keys, fail-closed, audited actions never blocked by an outage) | Working with keys held as files on the signing host; hardware or cloud key storage and the agent certificate authority key are not moved yet |
 | Directory sync of groups and OUs into policy (snapshot API, one revision, manual and directory values kept apart) | Working; the Active Directory and Entra ID connectors are not built yet |
+| Event storage in OpenSearch and ClickHouse (one index or key range per tenant, fixed mappings an agent cannot grow, repeatable writes, ordered paging) | Working; tested against real servers in the lab; the tenant read API, retention rules and message-bus per-tenant access are not built yet |
 | Licence gate in every build | Working |
 
 ## Planned
@@ -43,7 +44,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 - Sensors for Linux and macOS, and more Windows versions
 - The vulnerability scanner that feeds the vulnerability finding class (package inventory plus advisories)
 - Installers that replace the running agent on each operating system
-- Search and analytics stores (OpenSearch, ClickHouse) and the management portal
+- The management portal and the tenant search and reports on top of the event stores
 - The firewall isolation loop, and measurement of its speed
 - Detection content packs and managed detection services
 
