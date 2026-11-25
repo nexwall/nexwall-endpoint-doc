@@ -18,6 +18,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Signed policy: verification, anti-rollback, per-module apply with rollback, compliance report | Working on Windows 10 and Linux |
 | Policy by tenant, group, OU, tag and device with locks, signed per device, tenant administration API | Working in a development mode; access tokens only |
 | Policy, device attributes, device records, enrolment tokens and revocations in PostgreSQL with forced row-level security | Working; the audit log is still in files |
+| Controller production start: offline key ceremony, key files readable only by their owner, database required, no generated keys | Working in the lab; keys move to a hardware or cloud key service before release |
 | Tenant administrators create enrolment tokens, list devices and revoke a device | Working in a development mode; access tokens only |
 | Agent-to-sensor local channel (gRPC over a local pipe or socket, restricted to system and administrators) | Working on Windows 10 and Linux |
 | Agent supervises sensor programs, forwards their events and pushes each sensor its part of the policy | Working with a test sensor; production sensors not connected yet |

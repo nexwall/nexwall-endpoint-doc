@@ -33,3 +33,9 @@ Event data belongs to the tenant that produced it. The agent connects to a regio
 ## Audit log
 
 Enrolments, certificate renewals, revocations and update releases are recorded in an append-only log. Each record contains the hash of the previous record, so changing, deleting, inserting or reordering records is detected. Signed checkpoints, made with a key kept outside the log store, also reveal a log that was cut short. A privileged action is refused when its record cannot be written.
+
+## Keys and how the Controller starts
+
+Four keys sign what agents and auditors rely on: the certificate authority for agents, the policy key, the update key and the audit key. They are created once, offline, in a new directory; the tool refuses to overwrite an existing set. A production Controller reads them from files that only its owner can read and refuses to start otherwise. It also refuses to start without a database, so it never keeps policy, devices or revocations only in memory, and it never creates keys on its own. Each key has an identifier derived from its public half, so a key change is visible to agents.
+
+Keeping keys in files is a first step. Before release they move to a hardware or cloud key service, so that nobody who can read the Controller host can sign certificates or policy.
