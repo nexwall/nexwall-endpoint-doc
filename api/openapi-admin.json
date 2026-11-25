@@ -430,6 +430,93 @@
     "x-role": "admin"
    }
   },
+  "/directory/devices": {
+   "put": {
+    "summary": "Apply a directory snapshot of device groups and OUs",
+    "description": "Replaces the DIRECTORY-owned groups and OUs (dir_groups, dir_ous) of the listed devices in one revision, all or nothing. Groups, OUs and tags set by administrators are never touched. With complete=true the entries are the whole truth: devices not listed lose their directory lists. A snapshot that changes nothing starts no revision. A device listed twice, an invalid value or more than 20000 entries refuses the whole request.",
+    "tags": [
+     "devices"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Applied",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DirectorySyncResult"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid input.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "413": {
+      "description": "The body is larger than 16 MiB.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "The token is a viewer token; it cannot change anything.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DirectorySync"
+       }
+      }
+     }
+    },
+    "x-role": "admin"
+   }
+  },
   "/devices/{device}/attrs": {
    "get": {
     "summary": "Read groups, OUs and tags of a device",
@@ -1251,6 +1338,80 @@
       "items": {
        "type": "string"
       }
+     },
+     "dir_groups": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "readOnly": true,
+      "description": "Set only by the directory sync; refused when sent to the attrs call."
+     },
+     "dir_ous": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "readOnly": true
+     }
+    }
+   },
+   "DirectorySync": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "entries"
+    ],
+    "properties": {
+     "complete": {
+      "type": "boolean"
+     },
+     "entries": {
+      "type": "array",
+      "maxItems": 20000,
+      "items": {
+       "type": "object",
+       "additionalProperties": false,
+       "required": [
+        "device"
+       ],
+       "properties": {
+        "device": {
+         "type": "string"
+        },
+        "groups": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "maxItems": 64
+        },
+        "ous": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "maxItems": 64
+        }
+       }
+      }
+     }
+    }
+   },
+   "DirectorySyncResult": {
+    "type": "object",
+    "properties": {
+     "revision": {
+      "type": "integer"
+     },
+     "updated": {
+      "type": "integer"
+     },
+     "cleared": {
+      "type": "integer"
+     },
+     "unchanged": {
+      "type": "integer"
      }
     }
    },
