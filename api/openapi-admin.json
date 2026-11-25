@@ -1152,7 +1152,8 @@
    "bearer": {
     "type": "http",
     "scheme": "bearer",
-    "description": "Administrator token. The Controller stores only its SHA-256."
+    "bearerFormat": "opaque token or JWT",
+    "description": "Administrator token (the Controller stores only its SHA-256) or, when the Controller is configured for it, a JWT access token from the OIDC provider carrying the tenant and role claims."
    }
   },
   "schemas": {
