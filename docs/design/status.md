@@ -32,7 +32,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Durable event pipeline: acknowledged only after the message bus stored the event, tenant stamped from the certificate, per-tenant indexing, quarantine for mismatches | Working in a development mode; stored in files |
 | Cross-tenant test suite and fuzz tests on the ingestion path | Working; reports and search not built yet |
 | Sign-in to the administration API with identity-provider (OIDC) access tokens, strictly verified | Working; tested against a local test issuer, not yet against a live Logto |
-| Vulnerability findings from installed Linux software (dpkg, RPM, apk) matched against a signed advisory feed; one finding per advisory, opened, updated and closed as packages change | Working on Linux; no advisory content ships yet, delivery of the feed through the update channel and Windows and macOS software inventories are not built |
+| Vulnerability findings from installed Linux software (dpkg, RPM, apk) matched against a signed advisory feed; one finding per advisory, opened, updated and closed as packages change | Working on Linux; no advisory content ships yet, the feed is delivered through the update channel in stages (own signing key, checked before and after install); Windows and macOS software inventories are not built |
 | Directory sync of groups and OUs into policy (snapshot API, one revision, manual and directory values kept apart) | Working; the Active Directory and Entra ID connectors are not built yet |
 | Licence gate in every build | Working |
 

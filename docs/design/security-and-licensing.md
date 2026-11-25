@@ -12,7 +12,7 @@ slug: /design/security-and-licensing
 - **Mutual TLS with short-lived certificates** from a Nexwall certificate authority.
 - **Tamper resistance in user mode**: restricted service permissions, guards on the agent's files and settings, a watchdog and signed binaries. Nexwall Endpoint does not ship a kernel driver.
 - **Least privilege between parts**: sensors have no network access of their own and the agent is the only component that talks to the Controller.
-- **Signed vulnerability data**: the advisory feed the scanner uses is verified against keys the agent was configured with, refused when it is older than the one already used or expired, and a refused feed never closes an open finding.
+- **Signed vulnerability data**: the advisory feed the scanner uses is verified against keys the agent was configured with, refused when it is older than the one already used or expired, and a refused feed never closes an open finding. The feed reaches devices through the update channel under two separate keys: the update key decides who may release it, the advisory key decides what it says.
 - **Bounded resources**: the on-device spool has a fixed size and a documented drop policy.
 
 ## What Nexwall Endpoint does not claim
