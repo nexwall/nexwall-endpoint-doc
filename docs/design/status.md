@@ -44,6 +44,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Linux agent self-update: signed release checked, installed, restarted, confirmed by contact with the Controller; automatic rollback, failed release never retried | Working in the lab (real launcher and binaries, three scenarios); not yet tried under real systemd on the distribution matrix; Windows and macOS not built |
 | Agent release streams in the administration API (read only; publishing stays with operators) | Working in the lab; no portal screen yet |
 | Load test tool with simulated endpoints (`nx-loadgen`), exact loss measurement | Lab run: 10,000 endpoints enrolled, about 400,000 events, none lost or duplicated, on one development Controller; production stores, several Controllers, the 30-day soak and 50,000 endpoints are not yet tested |
+| Software bill of materials per shipped program and operating system, third-party licence notices in the Linux packages, checked before release | Working for the Go programs; not signed yet; Falco, Tetragon, osquery and Wazuh are added when they are packaged |
 | Licence gate in every build | Working |
 
 ## Planned
@@ -56,3 +57,13 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 - Detection content packs and managed detection services
 
 Nothing on this page is a commitment to a date. A list of tested operating systems will be published with the first release.
+
+## Release path
+
+Work is organised in three releases, each defined by what a customer can do with it, not by a date:
+
+- **First release candidate:** detect and contain on Linux and Windows. Telemetry from open sensors, alerts by e-mail and webhook, a console, and isolation of a machine through the Nexwall firewall, for one design-partner MSP.
+- **Release 1:** managed operations. Windows prevention controls, macOS, an approval-based response engine, cases, white-label reports, partner-portal and licensing integration, a 500-endpoint pilot.
+- **Release 2:** XDR and assurance. Correlation of endpoint and firewall events, a threat-intelligence bus, additional protection modules, network sensors, an external penetration test and long soak tests.
+
+Nothing on this page is a commitment to a date.
