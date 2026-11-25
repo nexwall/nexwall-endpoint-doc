@@ -27,7 +27,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Batch ingestion that refuses a whole batch if any event names another tenant | Working in a development mode |
 | Staged updates: signed manifests, rings, stop switch, health-checked install with rollback | Agent logic done and tested; no update service or installer yet |
 | Short-lived certificates with renewal and key rotation; revocation of a device or a tenant | Working in a development mode |
-| Tamper-evident audit log (hash chain per tenant, signed checkpoints, append-only in the database); privileged actions are refused if they cannot be recorded | Working in the lab; tenants cannot verify their own trail yet |
+| Tamper-evident audit log (hash chain per tenant, signed checkpoints, append-only in the database); privileged actions are refused if they cannot be recorded | Working in the lab; tenants verify their own trail on the server or offline (nx-auditverify) |
 | Update service: signed manifests, ring-by-ring release, stop switch, stored in the database, operator-only publishing | Working; releases survive restarts and are shared by all Controllers; applied by a lab installer only |
 | Durable event pipeline: acknowledged only after the message bus stored the event, tenant stamped from the certificate, per-tenant indexing, quarantine for mismatches | Working in a development mode; stored in files |
 | Cross-tenant test suite and fuzz tests on the ingestion path | Working; reports and search not built yet |

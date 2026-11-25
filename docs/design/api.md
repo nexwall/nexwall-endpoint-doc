@@ -32,9 +32,13 @@ The tenant and the device come only from the certificate. A body that names a di
 | Devices | List and read enrolled devices; set groups, OUs and tags; revoke a device |
 | Directory | Apply a snapshot of device groups and OUs coming from a directory (Active Directory, Entra ID) in one revision |
 | Enrolment | Issue, list and withdraw single-use enrolment tokens (the secret is shown once) |
-| Audit | Read the tenant's audit chain |
+| Audit | Read the tenant's audit chain, the public key that signs its checkpoints, the signed checkpoints, and a server-side verification of the chain |
 
 Every call is scoped to the tenant of the token. The tenant is never in a URL or body, and another tenant's objects answer "not found". A viewer token can read; only an administrator token can change anything. Every change is recorded in the audit log before it is made, and again with its result; if the record cannot be written, nothing changes. If the database is unavailable the answer is 503 and nothing changes.
+
+### Verifying the audit trail
+
+A tenant does not have to take the Controller's word that its audit trail is intact. The checkpoint public key is published through the API (keep a copy obtained out of band), and the records and the signed checkpoints can be downloaded. The `nx-auditverify` tool recomputes every hash, every link between records and every signature, and reports a trail that was edited, had records removed or has no signed checkpoint. The Controller can also check the chain on request; tampering is reported as a failed verification, and an unreadable store is reported as an error, never as success. Records newer than the last checkpoint are linked but are signed only by the next checkpoint, written within a minute of activity. Only the calling tenant's chain is ever checked; the chain of platform actions is not exposed. Available on production Controllers.
 
 ### Authentication of administrators
 
