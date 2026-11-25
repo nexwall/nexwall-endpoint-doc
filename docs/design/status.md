@@ -40,6 +40,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Event search through the administration API (own organisation only, filter by device and time, paged, fails closed) | Working; free-text search and the web screens are not built yet |
 | Event retention per organisation (daily clean-up with a report-first mode, a minimum period, keep-forever, and complete erasure on request) | Working against real OpenSearch and ClickHouse in the lab; periods are set in an operator file, not yet in the portal |
 | Secure message-bus connections (TLS, credentials, least-privilege accounts for the Controller and the indexer) | Working against a real NATS server with TLS and mutual TLS in the lab |
+| Linux agent packages (DEB and RPM, amd64 and arm64): silent install with a one-time enrolment token, hardened service, reproducible build | Working in the lab (real enrolment through the installed launcher); not yet signed, not yet tried on the full distribution matrix; Windows and macOS installers not built |
 | Licence gate in every build | Working |
 
 ## Planned
