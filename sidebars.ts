@@ -7,6 +7,7 @@ const sidebars: SidebarsConfig = {
     'design/components',
     'design/data-model',
     'design/identity-and-tenancy',
+    'design/policy',
     'design/response-and-firewall',
     'design/security-and-licensing',
     'design/status'

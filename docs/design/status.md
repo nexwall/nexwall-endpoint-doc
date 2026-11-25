@@ -16,6 +16,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | OCSF 1.10.0 event envelope and mappers for process, file, network, DNS, registry, module, memory, sign-in and detection-finding events | Working, covered by tests; the sensors that feed the newer classes are not connected yet |
 | Windows sensor | Stock behaviour rules fire in the lab; a 25-minute soak test ran without a crash |
 | Signed policy: verification, anti-rollback, per-module apply with rollback, compliance report | Working on Windows 10 and Linux |
+| Policy by tenant, group, OU, tag and device with locks, signed per device, tenant administration API | Working in a development mode; kept in memory, access tokens only |
 | Agent-to-sensor local channel (gRPC over a local pipe or socket, restricted to system and administrators) | Working on Windows 10 and Linux |
 | Agent supervises sensor programs, forwards their events and pushes each sensor its part of the policy | Working with a test sensor; production sensors not connected yet |
 | Durable event queue on disk, bounded, at-least-once delivery | Working; delivery after an outage verified end to end |
