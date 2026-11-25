@@ -34,3 +34,7 @@ The tenant and the device come only from the certificate. A body that names a di
 | Audit | Read the tenant's audit chain |
 
 Every call is scoped to the tenant of the token. The tenant is never in a URL or body, and another tenant's objects answer "not found". A viewer token can read; only an administrator token can change anything. Every change is recorded in the audit log before it is made, and again with its result; if the record cannot be written, nothing changes. If the database is unavailable the answer is 503 and nothing changes.
+
+### Authentication of administrators
+
+Two kinds of bearer credential are accepted on the administration listener: static administrator tokens (the Controller stores only a SHA-256) and, when configured, JWT access tokens from the partner portal's OpenID Connect provider (Logto). For the second kind the Controller verifies the signature against the provider's published keys (RS256, ES256 or EdDSA, the algorithm taken from the key), the issuer, the audience and the expiry, and takes the tenant and the role from exact claims. A token without a valid tenant or role is refused; there is no default tenant or role. The audit log records the actor as `oidc:` plus the provider's subject, so people can be told apart from static tokens.
