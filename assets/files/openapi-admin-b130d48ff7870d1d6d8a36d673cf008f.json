@@ -1,0 +1,1928 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "Nexwall Endpoint tenant administration API",
+  "version": "1.0.0-preview",
+  "description": "Served by the Controller on its own listener. Every call is scoped to the tenant of the bearer token; the tenant is never part of a URL or body, and another tenant's objects answer 404. Every change is written to the audit log before it is made (no record, no change) and again with its result. A store failure answers 503 and changes nothing. Preview: the contract may change before release."
+ },
+ "servers": [
+  {
+   "url": "https://controller.example/admin/v1",
+   "description": "Replace with your Controller's administration address"
+  }
+ ],
+ "security": [
+  {
+   "bearer": []
+  }
+ ],
+ "tags": [
+  {
+   "name": "policy"
+  },
+  {
+   "name": "devices"
+  },
+  {
+   "name": "enrolment"
+  },
+  {
+   "name": "audit"
+  }
+ ],
+ "paths": {
+  "/policy/layers": {
+   "get": {
+    "summary": "List policy layers",
+    "description": "Layers of the tenant.",
+    "tags": [
+     "policy"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Layers",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/LayerList"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "x-role": "viewer"
+   }
+  },
+  "/policy/layers/{scope}/{key}": {
+   "get": {
+    "summary": "Read one layer",
+    "description": "",
+    "tags": [
+     "policy"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "The layer",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Layer"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "scope",
+      "in": "path",
+      "required": true,
+      "description": "tenant, group, ou, tag or device",
+      "schema": {
+       "enum": [
+        "tenant",
+        "group",
+        "ou",
+        "tag",
+        "device"
+       ]
+      }
+     },
+     {
+      "name": "key",
+      "in": "path",
+      "required": true,
+      "description": "Layer key, percent-encoded. The tenant layer's key is _",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "x-role": "viewer"
+   },
+   "put": {
+    "summary": "Create or replace a layer",
+    "description": "Limits: 1000 layers per tenant, 256 KiB per layer. Locked modules cannot be overridden by lower layers.",
+    "tags": [
+     "policy"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Applied",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Revision"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid input.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "The token is a viewer token; it cannot change anything.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "scope",
+      "in": "path",
+      "required": true,
+      "description": "tenant, group, ou, tag or device",
+      "schema": {
+       "enum": [
+        "tenant",
+        "group",
+        "ou",
+        "tag",
+        "device"
+       ]
+      }
+     },
+     {
+      "name": "key",
+      "in": "path",
+      "required": true,
+      "description": "Layer key, percent-encoded. The tenant layer's key is _",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Layer"
+       }
+      }
+     }
+    },
+    "x-role": "admin"
+   },
+   "delete": {
+    "summary": "Delete a layer",
+    "description": "",
+    "tags": [
+     "policy"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Applied",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Revision"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "The token is a viewer token; it cannot change anything.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "scope",
+      "in": "path",
+      "required": true,
+      "description": "tenant, group, ou, tag or device",
+      "schema": {
+       "enum": [
+        "tenant",
+        "group",
+        "ou",
+        "tag",
+        "device"
+       ]
+      }
+     },
+     {
+      "name": "key",
+      "in": "path",
+      "required": true,
+      "description": "Layer key, percent-encoded. The tenant layer's key is _",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "x-role": "admin"
+   }
+  },
+  "/policy/rollout": {
+   "put": {
+    "summary": "Set the rollout carried in every policy document",
+    "description": "",
+    "tags": [
+     "policy"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Applied",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Revision"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid input.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "The token is a viewer token; it cannot change anything.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Rollout"
+       }
+      }
+     }
+    },
+    "x-role": "admin"
+   }
+  },
+  "/directory/devices": {
+   "put": {
+    "summary": "Apply a directory snapshot of device groups and OUs",
+    "description": "Replaces the DIRECTORY-owned groups and OUs (dir_groups, dir_ous) of the listed devices in one revision, all or nothing. Groups, OUs and tags set by administrators are never touched. With complete=true the entries are the whole truth: devices not listed lose their directory lists. A snapshot that changes nothing starts no revision. A device listed twice, an invalid value or more than 20000 entries refuses the whole request.",
+    "tags": [
+     "devices"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Applied",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DirectorySyncResult"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid input.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "413": {
+      "description": "The body is larger than 16 MiB.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "The token is a viewer token; it cannot change anything.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DirectorySync"
+       }
+      }
+     }
+    },
+    "x-role": "admin"
+   }
+  },
+  "/devices/{device}/attrs": {
+   "get": {
+    "summary": "Read groups, OUs and tags of a device",
+    "description": "",
+    "tags": [
+     "devices"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Attributes",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Attrs"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "device",
+      "in": "path",
+      "required": true,
+      "description": "Device identifier (lower case letters, digits and hyphens, 3 to 63 characters).",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "x-role": "viewer"
+   },
+   "put": {
+    "summary": "Set groups, OUs and tags of a device",
+    "description": "They select which layers apply. At most 64 entries per kind.",
+    "tags": [
+     "devices"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Applied",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Revision"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid input.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "The token is a viewer token; it cannot change anything.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "device",
+      "in": "path",
+      "required": true,
+      "description": "Device identifier (lower case letters, digits and hyphens, 3 to 63 characters).",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Attrs"
+       }
+      }
+     }
+    },
+    "x-role": "admin"
+   }
+  },
+  "/devices/{device}/policy": {
+   "get": {
+    "summary": "Preview the policy a device will receive",
+    "description": "Merged modules, the layers applied and overrides refused because of a lock.",
+    "tags": [
+     "devices"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Preview"
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "device",
+      "in": "path",
+      "required": true,
+      "description": "Device identifier (lower case letters, digits and hyphens, 3 to 63 characters).",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "x-role": "viewer"
+   }
+  },
+  "/devices": {
+   "get": {
+    "summary": "List enrolled devices",
+    "description": "Ordered by identifier. Follow `next` as `after` for the next page.",
+    "tags": [
+     "devices"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "A page of devices",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DeviceList"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid input.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "after",
+      "in": "query",
+      "required": false,
+      "description": "Return devices after this identifier.",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "1 to 500, default 100.",
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 500
+      }
+     }
+    ],
+    "x-role": "viewer"
+   }
+  },
+  "/devices/{device}": {
+   "get": {
+    "summary": "Read one device",
+    "description": "Enrolment time, certificate expiry, last seen and revocation.",
+    "tags": [
+     "devices"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "The device",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Device"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "device",
+      "in": "path",
+      "required": true,
+      "description": "Device identifier (lower case letters, digits and hyphens, 3 to 63 characters).",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "x-role": "viewer"
+   }
+  },
+  "/devices/{device}/revoke": {
+   "post": {
+    "summary": "Revoke a device",
+    "description": "Its certificate is refused on every route from then on (401). Repeating the call is harmless and keeps the first reason. A revocation is never undone because the audit record of its result could not be written.",
+    "tags": [
+     "devices"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Revoked"
+     },
+     "400": {
+      "description": "Invalid input.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "The token is a viewer token; it cannot change anything.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "device",
+      "in": "path",
+      "required": true,
+      "description": "Device identifier (lower case letters, digits and hyphens, 3 to 63 characters).",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RevokeRequest"
+       }
+      }
+     }
+    },
+    "x-role": "admin"
+   }
+  },
+  "/enrolment-tokens": {
+   "get": {
+    "summary": "List enrolment tokens",
+    "description": "Never shows the secret.",
+    "tags": [
+     "enrolment"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Tokens",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/TokenList"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "x-role": "viewer"
+   },
+   "post": {
+    "summary": "Issue a single-use enrolment token",
+    "description": "The secret is in this response only; the audit log names the token by its id. At most 1000 open tokens per tenant.",
+    "tags": [
+     "enrolment"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": "Issued",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/TokenIssued"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid input.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "The token is a viewer token; it cannot change anything.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TokenRequest"
+       }
+      }
+     }
+    },
+    "x-role": "admin"
+   }
+  },
+  "/enrolment-tokens/{id}": {
+   "delete": {
+    "summary": "Withdraw an unused token",
+    "description": "Used tokens stay for the record and answer 404.",
+    "tags": [
+     "enrolment"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Deleted"
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "The token is a viewer token; it cannot change anything.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "Token id (12 hex characters).",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "x-role": "admin"
+   }
+  },
+  "/audit": {
+   "get": {
+    "summary": "Read the tenant's audit chain",
+    "description": "Oldest first. Each record carries the hash of the previous record of this tenant's chain.",
+    "tags": [
+     "audit"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Records",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AuditList"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid input.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "after",
+      "in": "query",
+      "required": false,
+      "description": "Sequence number to start after.",
+      "schema": {
+       "type": "integer",
+       "minimum": 0
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "1 to 1000, default 100.",
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 1000
+      }
+     }
+    ],
+    "x-role": "viewer"
+   }
+  },
+  "/audit/public-key": {
+   "get": {
+    "summary": "Read the audit checkpoint public key",
+    "description": "The Ed25519 key that signs checkpoints of every audit chain. Keep a copy obtained out of band: a verifier that trusts only this key does not have to trust the API's answers. The signed message is nexwall-audit-checkpoint-v1|seq|head|time_unix_nano.",
+    "tags": [
+     "audit"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Key",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AuditPublicKey"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "x-role": "viewer"
+   }
+  },
+  "/audit/verify": {
+   "get": {
+    "summary": "Verify the tenant's own audit chain on the server",
+    "description": "Checks every record (consecutive, linked, unmodified), every signed checkpoint against its record, the stored head against the last record, and that no checkpoint lies beyond the end. Only the caller's chain is checked. Tampering is a successful call with ok false (error tampered or truncated); 503 means the check could not run, not that the chain is intact.",
+    "tags": [
+     "audit"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Result",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AuditVerifyResult"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "x-role": "viewer"
+   }
+  },
+  "/audit/checkpoints": {
+   "get": {
+    "summary": "Read the tenant's signed checkpoints",
+    "description": "Oldest first. With the records from GET /audit and the public key, any program can repeat the verification offline.",
+    "tags": [
+     "audit"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Checkpoints",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AuditCheckpointList"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid input.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "after",
+      "in": "query",
+      "required": false,
+      "description": "Sequence number to start after.",
+      "schema": {
+       "type": "integer",
+       "minimum": 0
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "1 to 1000, default 100.",
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 1000
+      }
+     }
+    ],
+    "x-role": "viewer"
+   }
+  }
+ },
+ "components": {
+  "securitySchemes": {
+   "bearer": {
+    "type": "http",
+    "scheme": "bearer",
+    "bearerFormat": "opaque token or JWT",
+    "description": "Administrator token (the Controller stores only its SHA-256) or, when the Controller is configured for it, a JWT access token from the OIDC provider carrying the tenant and role claims."
+   }
+  },
+  "schemas": {
+   "Error": {
+    "type": "object",
+    "required": [
+     "error"
+    ],
+    "properties": {
+     "error": {
+      "type": "string"
+     }
+    }
+   },
+   "Revision": {
+    "type": "object",
+    "required": [
+     "revision"
+    ],
+    "properties": {
+     "revision": {
+      "type": "integer"
+     }
+    }
+   },
+   "Layer": {
+    "type": "object",
+    "required": [
+     "modules"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "modules": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "object"
+      }
+     },
+     "locked": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     }
+    }
+   },
+   "LayerList": {
+    "type": "object",
+    "properties": {
+     "layers": {
+      "type": "array",
+      "items": {
+       "type": "object"
+      }
+     }
+    }
+   },
+   "Rollout": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+     "canary_bp": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+     },
+     "early_bp": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+     },
+     "halt": {
+      "type": "boolean"
+     }
+    }
+   },
+   "Attrs": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+     "groups": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "ous": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "tags": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "dir_groups": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "readOnly": true,
+      "description": "Set only by the directory sync; refused when sent to the attrs call."
+     },
+     "dir_ous": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "readOnly": true
+     }
+    }
+   },
+   "DirectorySync": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "entries"
+    ],
+    "properties": {
+     "complete": {
+      "type": "boolean"
+     },
+     "entries": {
+      "type": "array",
+      "maxItems": 20000,
+      "items": {
+       "type": "object",
+       "additionalProperties": false,
+       "required": [
+        "device"
+       ],
+       "properties": {
+        "device": {
+         "type": "string"
+        },
+        "groups": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "maxItems": 64
+        },
+        "ous": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "maxItems": 64
+        }
+       }
+      }
+     }
+    }
+   },
+   "DirectorySyncResult": {
+    "type": "object",
+    "properties": {
+     "revision": {
+      "type": "integer"
+     },
+     "updated": {
+      "type": "integer"
+     },
+     "cleared": {
+      "type": "integer"
+     },
+     "unchanged": {
+      "type": "integer"
+     }
+    }
+   },
+   "TokenRequest": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+     "ttl_seconds": {
+      "type": "integer",
+      "minimum": 60,
+      "maximum": 2592000,
+      "default": 3600
+     },
+     "label": {
+      "type": "string",
+      "maxLength": 100
+     }
+    }
+   },
+   "TokenIssued": {
+    "type": "object",
+    "required": [
+     "id",
+     "token",
+     "expires_at"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "token": {
+      "type": "string",
+      "description": "Shown once."
+     },
+     "expires_at": {
+      "type": "string",
+      "format": "date-time"
+     },
+     "label": {
+      "type": "string"
+     }
+    }
+   },
+   "Token": {
+    "type": "object",
+    "required": [
+     "id",
+     "created_by",
+     "created_at",
+     "expires_at"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "label": {
+      "type": "string"
+     },
+     "created_by": {
+      "type": "string"
+     },
+     "created_at": {
+      "type": "string",
+      "format": "date-time"
+     },
+     "expires_at": {
+      "type": "string",
+      "format": "date-time"
+     },
+     "used_at": {
+      "type": "string",
+      "format": "date-time"
+     }
+    }
+   },
+   "TokenList": {
+    "type": "object",
+    "properties": {
+     "tokens": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Token"
+      }
+     }
+    }
+   },
+   "Device": {
+    "type": "object",
+    "required": [
+     "device_id",
+     "enrolled_at",
+     "cert_not_after"
+    ],
+    "properties": {
+     "device_id": {
+      "type": "string"
+     },
+     "enrolled_at": {
+      "type": "string",
+      "format": "date-time"
+     },
+     "token_id": {
+      "type": "string"
+     },
+     "cert_not_after": {
+      "type": "string",
+      "format": "date-time"
+     },
+     "last_seen": {
+      "type": "string",
+      "format": "date-time"
+     },
+     "revoked_at": {
+      "type": "string",
+      "format": "date-time"
+     },
+     "revoke_reason": {
+      "type": "string"
+     },
+     "revoked_by": {
+      "type": "string"
+     }
+    }
+   },
+   "DeviceList": {
+    "type": "object",
+    "properties": {
+     "devices": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/Device"
+      }
+     },
+     "next": {
+      "type": "string",
+      "description": "Empty on the last page."
+     }
+    }
+   },
+   "RevokeRequest": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+     "reason": {
+      "type": "string",
+      "maxLength": 200
+     }
+    }
+   },
+   "AuditRecord": {
+    "type": "object",
+    "required": [
+     "seq",
+     "action",
+     "outcome",
+     "prev",
+     "hash"
+    ],
+    "properties": {
+     "seq": {
+      "type": "integer"
+     },
+     "time_unix_nano": {
+      "type": "integer"
+     },
+     "tenant": {
+      "type": "string"
+     },
+     "actor_type": {
+      "enum": [
+       "admin",
+       "device",
+       "system"
+      ]
+     },
+     "actor_id": {
+      "type": "string"
+     },
+     "action": {
+      "type": "string"
+     },
+     "target": {
+      "type": "string"
+     },
+     "outcome": {
+      "enum": [
+       "ok",
+       "denied",
+       "error"
+      ]
+     },
+     "detail": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "prev": {
+      "type": "string"
+     },
+     "hash": {
+      "type": "string"
+     }
+    }
+   },
+   "AuditCheckpoint": {
+    "type": "object",
+    "required": [
+     "seq",
+     "head",
+     "time_unix_nano",
+     "sig"
+    ],
+    "properties": {
+     "seq": {
+      "type": "integer"
+     },
+     "head": {
+      "type": "string",
+      "description": "Hash of record seq."
+     },
+     "time_unix_nano": {
+      "type": "integer"
+     },
+     "sig": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "description": "Ed25519 signature."
+     }
+    }
+   },
+   "AuditCheckpointList": {
+    "type": "object",
+    "properties": {
+     "checkpoints": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/AuditCheckpoint"
+      }
+     }
+    }
+   },
+   "AuditPublicKey": {
+    "type": "object",
+    "required": [
+     "algorithm",
+     "public_key",
+     "key_id"
+    ],
+    "properties": {
+     "algorithm": {
+      "const": "ed25519"
+     },
+     "public_key": {
+      "type": "string",
+      "description": "Hex."
+     },
+     "key_id": {
+      "type": "string",
+      "description": "First 8 bytes of the SHA-256 of the key, hex."
+     },
+     "checkpoint_message": {
+      "type": "string"
+     }
+    }
+   },
+   "AuditVerifyResult": {
+    "type": "object",
+    "required": [
+     "ok",
+     "records"
+    ],
+    "properties": {
+     "ok": {
+      "type": "boolean"
+     },
+     "records": {
+      "type": "integer"
+     },
+     "error": {
+      "enum": [
+       "tampered",
+       "truncated"
+      ]
+     },
+     "head_seq": {
+      "type": "integer"
+     },
+     "head": {
+      "type": "string"
+     },
+     "last_checkpoint": {
+      "$ref": "#/components/schemas/AuditCheckpoint"
+     }
+    }
+   },
+   "AuditList": {
+    "type": "object",
+    "properties": {
+     "records": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/AuditRecord"
+      }
+     }
+    }
+   }
+  }
+ }
+}

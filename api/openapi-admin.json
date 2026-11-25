@@ -1232,6 +1232,210 @@
     ],
     "x-role": "viewer"
    }
+  },
+  "/audit/public-key": {
+   "get": {
+    "summary": "Read the audit checkpoint public key",
+    "description": "The Ed25519 key that signs checkpoints of every audit chain. Keep a copy obtained out of band: a verifier that trusts only this key does not have to trust the API's answers. The signed message is nexwall-audit-checkpoint-v1|seq|head|time_unix_nano.",
+    "tags": [
+     "audit"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Key",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AuditPublicKey"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "x-role": "viewer"
+   }
+  },
+  "/audit/verify": {
+   "get": {
+    "summary": "Verify the tenant's own audit chain on the server",
+    "description": "Checks every record (consecutive, linked, unmodified), every signed checkpoint against its record, the stored head against the last record, and that no checkpoint lies beyond the end. Only the caller's chain is checked. Tampering is a successful call with ok false (error tampered or truncated); 503 means the check could not run, not that the chain is intact.",
+    "tags": [
+     "audit"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Result",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AuditVerifyResult"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "x-role": "viewer"
+   }
+  },
+  "/audit/checkpoints": {
+   "get": {
+    "summary": "Read the tenant's signed checkpoints",
+    "description": "Oldest first. With the records from GET /audit and the public key, any program can repeat the verification offline.",
+    "tags": [
+     "audit"
+    ],
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Checkpoints",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AuditCheckpointList"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "Invalid input.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found in this tenant.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No or unknown token.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The store or the audit log is unavailable; nothing was changed.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "name": "after",
+      "in": "query",
+      "required": false,
+      "description": "Sequence number to start after.",
+      "schema": {
+       "type": "integer",
+       "minimum": 0
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "1 to 1000, default 100.",
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 1000
+      }
+     }
+    ],
+    "x-role": "viewer"
+   }
   }
  },
  "components": {
@@ -1614,6 +1818,97 @@
      },
      "hash": {
       "type": "string"
+     }
+    }
+   },
+   "AuditCheckpoint": {
+    "type": "object",
+    "required": [
+     "seq",
+     "head",
+     "time_unix_nano",
+     "sig"
+    ],
+    "properties": {
+     "seq": {
+      "type": "integer"
+     },
+     "head": {
+      "type": "string",
+      "description": "Hash of record seq."
+     },
+     "time_unix_nano": {
+      "type": "integer"
+     },
+     "sig": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "description": "Ed25519 signature."
+     }
+    }
+   },
+   "AuditCheckpointList": {
+    "type": "object",
+    "properties": {
+     "checkpoints": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/AuditCheckpoint"
+      }
+     }
+    }
+   },
+   "AuditPublicKey": {
+    "type": "object",
+    "required": [
+     "algorithm",
+     "public_key",
+     "key_id"
+    ],
+    "properties": {
+     "algorithm": {
+      "const": "ed25519"
+     },
+     "public_key": {
+      "type": "string",
+      "description": "Hex."
+     },
+     "key_id": {
+      "type": "string",
+      "description": "First 8 bytes of the SHA-256 of the key, hex."
+     },
+     "checkpoint_message": {
+      "type": "string"
+     }
+    }
+   },
+   "AuditVerifyResult": {
+    "type": "object",
+    "required": [
+     "ok",
+     "records"
+    ],
+    "properties": {
+     "ok": {
+      "type": "boolean"
+     },
+     "records": {
+      "type": "integer"
+     },
+     "error": {
+      "enum": [
+       "tampered",
+       "truncated"
+      ]
+     },
+     "head_seq": {
+      "type": "integer"
+     },
+     "head": {
+      "type": "string"
+     },
+     "last_checkpoint": {
+      "$ref": "#/components/schemas/AuditCheckpoint"
      }
     }
    },
