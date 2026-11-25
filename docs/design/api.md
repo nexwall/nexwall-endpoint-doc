@@ -30,6 +30,7 @@ The tenant and the device come only from the certificate. A body that names a di
 |---|---|
 | Policy | Layers for the tenant, group, OU, tag and device; rollout settings; a preview of the policy one device will receive |
 | Devices | List and read enrolled devices; set groups, OUs and tags; revoke a device |
+| Directory | Apply a snapshot of device groups and OUs coming from a directory (Active Directory, Entra ID) in one revision |
 | Enrolment | Issue, list and withdraw single-use enrolment tokens (the secret is shown once) |
 | Audit | Read the tenant's audit chain |
 
