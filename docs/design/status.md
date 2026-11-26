@@ -47,6 +47,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Software bill of materials per shipped program and operating system, third-party licence notices in the Linux packages, checked before release | Working for the Go programs; not signed yet; Falco, Tetragon, osquery and Wazuh are added when they are packaged |
 | Licence gate in every build | Working |
 | Linux sensors: osquery (processes, network connections, listening ports, logins, file integrity) and Falco (runtime detections), as separate supervised processes behind the sensor interface, packaged as the optional `nexwall-agent-sensors` DEB/RPM with pinned upstream versions | Lab run on one Linux host: events reach the store within a minute, stamped with tenant and device; osquery killed 100 times and Falco 20 times, the agent keeps running; every event checked against the OCSF 1.10.0 definitions (101 of 101 valid). A 24-hour capture is running; installation on three distributions, arm64 and package signing are not yet done |
+| Alerts from detections: grouped per machine and rule, with severity, ATT&CK technique and rule source and licence; acknowledge and resolve through the administration API; delivery by e-mail (TLS required) and signed webhook with retry, per-customer routes, separate `nx-alerter` service | Lab run: alert and both deliveries within a second of a real Falco detection, a failing receiver retried, nothing lost while the alerter was stopped; real mail provider not tested; no console screen yet |
 
 ## Planned
 
