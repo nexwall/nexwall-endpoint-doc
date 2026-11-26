@@ -49,14 +49,17 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Linux sensors: osquery (processes, network connections, listening ports, logins, file integrity) and Falco (runtime detections), as separate supervised processes behind the sensor interface, packaged as the optional `nexwall-agent-sensors` DEB/RPM with pinned upstream versions | Lab run on one Linux host: events reach the store within a minute, stamped with tenant and device; osquery killed 100 times and Falco 20 times, the agent keeps running; every event checked against the OCSF 1.10.0 definitions (101 of 101 valid). A 24-hour capture is running; installation on three distributions, arm64 and package signing are not yet done |
 | Alerts from detections: grouped per machine and rule, with severity, ATT&CK technique and rule source and licence; acknowledge and resolve through the administration API; delivery by e-mail (TLS required) and signed webhook with retry, per-customer routes, separate `nx-alerter` service | Lab run: alert and both deliveries within a second of a real Falco detection, a failing receiver retried, nothing lost while the alerter was stopped; real mail provider not tested; no console screen yet |
 | Response actions on Linux: isolate and release a machine (nftables, ends by itself, survives agent restart and reboot), stop a process tree, quarantine a file, collect process list; destructive actions need a named approver (second person optional), idempotent requests, signed expiring orders bound to one machine and customer, local tamper-evident log, full audit | Lab run on Debian 12 with real nftables: 13 checks passed; isolation 11.9 s at the 95th percentile over 100 runs (worst 12.1 s, target 30 s); the firewall leg is a later release (MR3); no console screen yet; Windows later |
+| Administration console in the browser (served by the Controller): devices, event search, alerts, isolation requests and approvals, enrolment tokens with install instructions, endpoint protection settings, audit verification, English and Brazilian Portuguese; sign-in with an API token | Lab run with a real browser against a real Controller and two tenants: no data from the other tenant on any screen, strict page security policy; single sign-on is not built |
+| Endpoint protection settings per tenant, group or device (off, monitor, enforce): host firewall (Linux) and USB storage control are enforced on the machine; threat protection, application control, exclusions and web protection are saved and checked, and each machine reports them as not enforced; unsafe settings are refused when saved | Lab run: a real agent in a network namespace applied the firewall from the console policy within seconds and reported the other modules honestly; enforcement of the other modules is the next task |
+| Per-tenant device limit and end of term at enrolment, set by the operator | Working, tested on the in-memory store and PostgreSQL |
 
 ## Planned
 
 - Sensors for Linux and macOS, and more Windows versions
 - The vulnerability scanner that feeds the vulnerability finding class (package inventory plus advisories)
 - Installers that replace the running agent on each operating system
-- The management portal and the tenant search and reports on top of the event stores
-- The firewall isolation loop, and measurement of its speed
+- Reports on top of the event stores and the partner portal
+- The firewall isolation loop (release 3; the agent side of isolation is measured and working)
 - Detection content packs and managed detection services
 
 Nothing on this page is a commitment to a date. A list of tested operating systems will be published with the first release.
@@ -65,7 +68,7 @@ Nothing on this page is a commitment to a date. A list of tested operating syste
 
 Work is organised in three releases, each defined by what a customer can do with it, not by a date:
 
-- **First release candidate:** detect and contain on Linux and Windows. Telemetry from open sensors, alerts by e-mail and webhook, a console, and isolation of a machine, for one design-partner MSP (the firewall leg is a later release, MR3).
+- **First release candidate:** detect and contain on Linux, installable in a lab and on one test server. Telemetry from open sensors, alerts by e-mail and webhook, a console, endpoint protection settings, and isolation of a machine. Windows follows as the second candidate; the firewall leg is a later release (MR3).
 - **Release 1:** managed operations. Windows prevention controls, macOS, an approval-based response engine, cases, white-label reports, partner-portal and licensing integration, a 500-endpoint pilot.
 - **Release 2:** XDR and assurance. Correlation of endpoint and firewall events, a threat-intelligence bus, additional protection modules, network sensors, an external penetration test and long soak tests.
 
