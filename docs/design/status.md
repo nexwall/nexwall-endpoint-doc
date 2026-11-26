@@ -46,6 +46,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Load test tool with simulated endpoints (`nx-loadgen`), exact loss measurement | Lab run: 10,000 endpoints enrolled, about 400,000 events, none lost or duplicated, on one development Controller; production stores, several Controllers, the 30-day soak and 50,000 endpoints are not yet tested |
 | Software bill of materials per shipped program and operating system, third-party licence notices in the Linux packages, checked before release | Working for the Go programs; not signed yet; Falco, Tetragon, osquery and Wazuh are added when they are packaged |
 | Licence gate in every build | Working |
+| Linux sensors: osquery (processes, network connections, listening ports, logins, file integrity) and Falco (runtime detections), as separate supervised processes behind the sensor interface, packaged as the optional `nexwall-agent-sensors` DEB/RPM with pinned upstream versions | Lab run on one Linux host: events reach the store within a minute, stamped with tenant and device; osquery killed 100 times and Falco 20 times, the agent keeps running; every event checked against the OCSF 1.10.0 definitions (101 of 101 valid). A 24-hour capture is running; installation on three distributions, arm64 and package signing are not yet done |
 
 ## Planned
 
