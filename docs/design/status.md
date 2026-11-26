@@ -22,6 +22,7 @@ Nexwall Endpoint is in development. Progress is published in the [release notes]
 | Controller production start: offline key ceremony, key files readable only by their owner, database required, no generated keys | Working in the lab; keys move to a hardware or cloud key service before release |
 | Tenant administrators create enrolment tokens, list devices and revoke a device | Working in a development mode; access tokens only |
 | Agent-to-sensor local channel (gRPC over a local pipe or socket, restricted to system and administrators) | Working on Windows 10 and Linux |
+| Install on one Linux server, encrypted backup and restore to a new server, upgrade with automatic rollback, health and metrics, support bundles without secrets | Working in the lab on Debian 12; other distributions not tested |
 | Agent supervises sensor programs, forwards their events and pushes each sensor its part of the policy | Working with a test sensor; production sensors not connected yet |
 | Durable event queue on disk, bounded, at-least-once delivery | Working; delivery after an outage verified end to end |
 | Batch ingestion that refuses a whole batch if any event names another tenant | Working in a development mode |
